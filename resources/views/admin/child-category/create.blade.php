@@ -1,0 +1,91 @@
+@extends('admin.layouts.master')
+@section('title')
+{{$settings->site_name}} ||Child Category
+@endsection
+
+@section('content')
+    <!-- Main Content -->
+    <section class="section">
+        <div class="section-header">
+            <h1>Child Category</h1>
+        </div>
+
+        <div class="section-body">
+            <div class="row">
+                <div class="col-12 ">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>All Child-Category</h4>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ route('admin.child-category.store') }}" method="POST">
+                                @csrf
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select class="form-control main-category" id="category" name="category">
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}">{{ $category->name }} </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sub-category">Sub-category</label>
+                                    <select class="form-control sub-category" id="sub-category" name="sub_category">
+                                      <option value="">Select</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="">Name</label>
+                                    <input type="text" class="form-control" placeholder="Enter Name" name="name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="status">Status</label>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="1"> Active</option>
+                                        <option value="0"> Inactive</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" type="submit">Create</button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+@endsection
+
+@push('scripts') 
+<script>
+    $(document).ready(function() {
+        $('body').on('change','.main-category',function(event) {
+
+            let id= $(this).val();
+            $.ajax({
+                method: 'GET',
+                url: "{{route('admin.get-subcategories')}}",
+                data: {
+                    id: id
+                },
+                success: function(data) {
+                    console.log(data);
+                    $('.sub-category').html(' <option value="">Select</option>')
+                    $.each(data,function(i,item) {
+                        $('.sub-category').append(`<option value="${item.id}">${item.name} </option>`)
+                    })
+                    
+                },
+                error(xhr,status,error) {
+                    console.log(error);
+                    
+                }
+            })
+        })
+    })
+</script>
+
+@endpush
